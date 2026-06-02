@@ -21,12 +21,23 @@ if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 db = SQLAlchemy(app)
 
+# Database Model for Road Events
+class RoadEvent(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    event_type = db.Column(db.String(50))
+    lat = db.Column(db.Float)
+    lng = db.Column(db.Float)
+
+# Create tables if they don't exist
+with app.app_context():
+    db.create_all()
+
 @app.route('/')
 def home():
     return {
         "status": "online",
-        "project": "DriveSense Backend",
-        "message": "The brain is alive and connected!"
+        "database": "Connected to Neon",
+        "info": "DriveSense Backend v2"
     }
 
 # In-memory event storage (replace with database in production)
