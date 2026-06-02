@@ -56,6 +56,6 @@ def health():
     return jsonify({"status": "healthy", "timestamp": datetime.now().isoformat()}), 200
 
 if __name__ == '__main__':
-    port = int(os.getenv('PORT', 5000))
+    port = int(os.getenv('PORT', 8080))  # Railway sets PORT=8080 by default
     debug = os.getenv('FLASK_ENV') == 'development'
     app.run(host='0.0.0.0', port=port, debug=debug)
