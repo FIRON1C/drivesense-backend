@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from flask_sqlalchemy import SQLAlchemy
 import os
 from dotenv import load_dotenv
 import json
@@ -9,6 +10,16 @@ load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
+
+# Database configuration
+DATABASE_URL = os.getenv('DATABASE_URL')
+
+# Fix 'postgres' vs 'postgresql' issue automatically just in case
+if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
+db = SQLAlchemy(app)
 
 @app.route('/')
 def home():
