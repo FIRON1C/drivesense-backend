@@ -10,6 +10,14 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
+@app.route('/')
+def home():
+    return {
+        "status": "online",
+        "project": "DriveSense Backend",
+        "message": "The brain is alive and connected!"
+    }
+
 # In-memory event storage (replace with database in production)
 events_storage = []
 
