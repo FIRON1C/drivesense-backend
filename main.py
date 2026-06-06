@@ -57,28 +57,26 @@ events_storage = []
 
 @app.route('/api/upload', methods=['POST'])
 def upload_data():
-    """Batch upload endpoint for mobile app buffer-and-sync"""
+    """Batch upload endpoint for mobile app buffer-and-sync and bulk CSV migrations"""
     try:
         data = request.get_json() or {}
         events = data.get('events', [])
         
         for e in events:
+            try:
+                lat_val = float(e.get('lat'))
+                lng_val = float(e.get('lng'))
+            except (TypeError, ValueError):
+                continue
+                
             new_event = RoadEvent(
-                event_type=e.get('type') or e.get('event_type'),
-                lat=float(e['lat']),
-                lng=float(e['lng']),
-                magnitude=float(e.get('mag') or e.get('magnitude', 0)),
-                time=e.get('time')
+                event_type=e.get('type') or e.get('event_type') or 'UNKNOWN',
+                lat=lat_val,
+                lng=lng_val,
+                magnitude=float(e.get('mag') or e.get('magnitude') or 0),
+                time=e.get('time') or datetime.utcnow().isoformat()
             )
             db.session.add(new_event)
-            # Add to legacy events_storage for local compatibility
-            events_storage.append({
-                'type': new_event.event_type,
-                'lat': new_event.lat,
-                'lng': new_event.lng,
-                'magnitude': new_event.magnitude,
-                'time': new_event.time
-            })
             
         db.session.commit()
         return jsonify({"status": "success", "synced": len(events)}), 200
